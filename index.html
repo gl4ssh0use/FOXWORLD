@@ -2,12 +2,68 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-  </header> 
 
-  <div align="center">
-    <iframe src="./chapters/0_foreword.html" ></iframe>
+
+  <div id="footer">
+    <div>Ссылки:</div>
+    <a href="https://github.com/gl4ssh0use/FOXWORLD">GitHub</a>
+    <a href="https://raw.githubusercontent.com/gl4ssh0use/FOXWORLD/7420e1eb919ae281d5db7da30fc02fc0d4f9ce8f/LICENSE">LICENSE</a>
   </div>
 
-  <footer></footer>
+  <div id = "chapters_block">
+    <div id = "chapters_picker">
+      <h2>Главы:</h2>
+    </div>
+    <button id = "chapters_picker_activator" onClick="useChaptersPicker()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="24px" width="24px" fill="#000000"><path d="M3,22V20.5H5.5V19.75H4v-1.5H5.5V17.5H3V16H6q0.43,0 0.71,0.29T7,17v1q0,0.43-0.29,0.71T6,19q0.43,0 0.71,0.29T7,20v1q0,0.43-0.29,0.71T6,22H3Zm0-7V12.25q0-0.43 0.29-0.71T4,11.25H5.5V10.5H3V9H6Q6.43,9 6.71,9.29T7,10v1.75q0,0.42-0.29,0.71T6,12.75H4.5V13.5H7V15H3ZM4.5,8V3.5H3V2H6V8H4.5ZM9,19V17H21v2H9Zm0-6V11H21v2H9ZM9,7V5H21V7H9Z"/></svg>
+    </button>
+  </div>
+
+  <div align="center" id = "content">
+  </div>
+
+
+  <script>
+    const chapters_picker = document.getElementById("chapters_picker")
+
+    const CHAPTERS_STORE = "./stores/chapters.txt";
+    const CHAPTERS_FOLDER = "./chapters/";
+
+    loadChapter("0_foreword.html");
+
+    fetch(CHAPTERS_STORE)
+      .then(res => res.text())
+      .then(text => {
+        const chapters = text.split("\n");
+        for (const chapter of chapters) {
+          if (chapter) {
+            chapter_element = document.createElement("button");
+            chapter_element.textContent = chapter.replace(".html", "");
+            chapter_element.addEventListener("click", () => loadChapter(chapter));
+            chapter_element.className = "chapter_element";
+            chapters_picker.appendChild(chapter_element);
+          }
+        }
+      })
+
+    function useChaptersPicker() {
+      const chapters_picker = document.getElementById("chapters_picker");
+      const is_hidden = window.getComputedStyle(chapters_picker).display;
+
+      chapters_picker.style.display = is_hidden === "none" ? "flex" : "none";
+    }
+
+    function loadChapter(page) {
+      fetch(CHAPTERS_FOLDER + page)
+        .then(response => response.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          document.getElementById("content").innerHTML = doc.getElementById("content").innerHTML;
+          document.getElementById("footer").style.display = "block";
+        });
+    }
+
+  </script>
+
 </body>
